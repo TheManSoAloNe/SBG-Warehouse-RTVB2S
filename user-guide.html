@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คู่มือการใช้งาน SBG-Warehouse RTVB2S</title>
+<style>
+  :root{
+    --bg:#0f172a; --bg-card:#1e293b; --bg-input:#0b1220; --border:#334155;
+    --text:#e2e8f0; --text-dim:#94a3b8; --text-faint:#64748b;
+    --primary:#3b82f6; --success:#22c55e; --warning:#f59e0b; --danger:#ef4444; --purple:#a855f7;
+    --page-bg:#f4f6fb; --page-card:#ffffff; --page-text:#1e293b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Sarabun","Noto Sans Thai",Roboto,Arial,sans-serif;
+    background:var(--page-bg); color:var(--page-text); line-height:1.6;
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:28px 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background:linear-gradient(135deg,#0f172a,#1e3a5f);
+    color:#fff; padding:40px 20px; text-align:center; border-radius:0 0 28px 28px;
+    margin-bottom:10px;
+  }
+  header.hero img{height:56px; border-radius:10px; margin-bottom:14px;}
+  header.hero h1{margin:0 0 8px; font-size:26px;}
+  header.hero p{margin:0; color:#94a3b8; font-size:14px;}
+
+  /* ---------- Table of contents ---------- */
+  nav.toc{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    margin:22px 0 40px;
+  }
+  nav.toc a{
+    background:var(--page-card); border:1px solid #e2e8f0; color:#334155;
+    padding:8px 14px; border-radius:999px; font-size:13px; font-weight:600;
+    text-decoration:none; box-shadow:0 1px 2px rgba(0,0,0,.04);
+  }
+  nav.toc a:hover{border-color:var(--primary); color:var(--primary);}
+
+  /* ---------- Section layout ---------- */
+  section.step{
+    display:flex; gap:36px; align-items:flex-start; margin-bottom:64px;
+    flex-wrap:wrap;
+  }
+  section.step.reverse{flex-direction:row-reverse;}
+  .step-text{flex:1; min-width:280px;}
+  .step-num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:50%; background:var(--primary); color:#fff;
+    font-weight:800; font-size:15px; margin-bottom:12px;
+  }
+  .step-text h2{margin:0 0 10px; font-size:21px; color:#0f172a;}
+  .step-text p{color:#475569; font-size:14.5px; margin:0 0 14px;}
+  .callout-list{list-style:none; margin:0; padding:0;}
+  .callout-list li{
+    display:flex; gap:10px; align-items:flex-start; margin-bottom:10px; font-size:13.5px; color:#334155;
+  }
+  .callout-badge{
+    flex-shrink:0; width:22px; height:22px; border-radius:50%; background:#0f172a; color:#fff;
+    font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .tip-box{
+    background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px; padding:12px 14px;
+    font-size:13px; color:#1e40af; margin-top:16px;
+  }
+  .warn-box{
+    background:#fef2f2; border:1px solid #fecaca; border-radius:12px; padding:12px 14px;
+    font-size:13px; color:#991b1b; margin-top:16px;
+  }
+
+  /* ---------- Phone mockup frame ---------- */
+  .phone-wrap{flex-shrink:0; position:relative;}
+  .phone{
+    width:300px; background:var(--bg); border-radius:34px; padding:12px 10px;
+    box-shadow:0 20px 50px rgba(15,23,42,.35), 0 0 0 8px #111827;
+    position:relative;
+  }
+  .phone::before{
+    content:''; position:absolute; top:12px; left:50%; transform:translateX(-50%);
+    width:70px; height:6px; background:#000; border-radius:99px; z-index:5;
+  }
+  .phone-screen{
+    background:var(--bg); border-radius:22px; overflow:hidden; min-height:520px;
+    font-size:12px; color:var(--text); position:relative;
+    display:flex; flex-direction:column;
+  }
+
+  /* mock topbar */
+  .mock-topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px; border-bottom:1px solid var(--border); background:rgba(15,23,42,.95);
+  }
+  .mock-topbar .mt-left{display:flex; align-items:center; gap:6px;}
+  .mock-topbar img{height:18px; border-radius:4px;}
+  .mock-topbar .mt-title{font-size:10.5px; font-weight:700;}
+  .mock-topbar .mt-title small{display:block; font-weight:400; color:var(--text-faint); font-size:8px;}
+  .mock-badge{font-size:7.5px; font-weight:700; padding:2px 6px; border-radius:99px; background:rgba(34,197,94,.15); color:var(--success); border:1px solid rgba(34,197,94,.4);}
+  .mock-icons{display:flex; gap:4px;}
+  .mock-icon-btn{width:20px; height:20px; border-radius:6px; background:var(--bg-card); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px;}
+
+  .mock-body{padding:14px 12px; flex:1; overflow:hidden;}
+  .mock-title{font-size:15px; font-weight:800; margin-bottom:3px;}
+  .mock-sub{font-size:10.5px; color:var(--text-dim); margin-bottom:14px;}
+
+  .mock-user-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:8px;}
+  .mock-user-card{background:var(--bg-card); border-radius:12px; padding:14px 6px; text-align:center;}
+  .mock-user-avatar{width:34px; height:34px; border-radius:50%; margin:0 auto 6px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:13px;}
+  .mock-user-name{font-size:11px; font-weight:700;}
+
+  .mock-card{background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:10px;}
+  .mock-card-title{font-size:9.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px; letter-spacing:.4px;}
+  .mock-input{background:var(--bg-input); border:1px solid var(--border); border-radius:8px; padding:9px 10px; font-size:11px; color:var(--text-faint); margin-bottom:8px;}
+  .mock-input.scan{border-color:var(--primary); color:var(--text); font-weight:700; text-align:center;}
+  .mock-btn{
+    display:block; text-align:center; border-radius:9px; padding:9px; font-size:11px; font-weight:700;
+    background:var(--bg-card); border:1px solid var(--border); color:var(--text); margin-bottom:6px;
+  }
+  .mock-btn.primary{background:var(--primary); border-color:var(--primary); color:#fff;}
+  .mock-btn.success{background:var(--success); border-color:var(--success); color:#052e12;}
+  .mock-btn.danger{background:var(--danger); border-color:var(--danger); color:#fff;}
+  .mock-btn.warning{background:var(--warning); border-color:var(--warning); color:#2b1a02;}
+  .mock-btn-row{display:flex; gap:6px;}
+  .mock-btn-row .mock-btn{flex:1; margin-bottom:0;}
+
+  .mock-job-item{
+    display:flex; justify-content:space-between; align-items:center; background:var(--bg-card);
+    border:1px solid var(--border); border-radius:9px; padding:9px 10px; margin-bottom:7px;
+  }
+  .mock-job-item .jn{font-size:11px; font-weight:700;}
+  .mock-job-item .jm{font-size:8.5px; color:var(--text-faint); margin-top:2px;}
+  .mock-pill{font-size:8px; font-weight:700; padding:2px 7px; border-radius:99px;}
+  .mock-pill.active{background:rgba(34,197,94,.15); color:var(--success);}
+  .mock-pill.closed{background:rgba(148,163,184,.15); color:var(--text-dim);}
+
+  .mock-tabs{display:flex; gap:3px; background:var(--bg-input); padding:3px; border-radius:9px; margin-bottom:10px;}
+  .mock-tab{flex:1; text-align:center; padding:6px; border-radius:7px; font-size:9.5px; font-weight:700; color:var(--text-dim);}
+  .mock-tab.active{background:var(--primary); color:#fff;}
+
+  .mock-scan-row{
+    display:flex; justify-content:space-between; align-items:center; background:var(--bg-input);
+    border:1px solid var(--border); border-radius:8px; padding:8px 9px; margin-bottom:6px; font-size:10.5px;
+  }
+  .mock-scan-row .barcode{font-weight:700; font-family:monospace;}
+  .mock-scan-row .prod{display:block; font-size:9px; color:var(--success); margin-top:1px;}
+  .mock-scan-row .meta{font-size:8.5px; color:var(--text-faint); margin-top:2px;}
+  .mock-qty-badge{background:rgba(59,130,246,.15); color:var(--primary); font-weight:700; padding:2px 7px; border-radius:99px; font-size:9px;}
+
+  .mock-stat-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-bottom:10px;}
+  .mock-stat-box{background:var(--bg-input); border:1px solid var(--border); border-radius:8px; padding:8px; text-align:center;}
+  .mock-stat-box .v{font-size:14px; font-weight:800;}
+  .mock-stat-box .l{font-size:7.5px; color:var(--text-faint);}
+
+  .mock-presence{
+    display:flex; align-items:center; gap:8px; background:rgba(34,197,94,.08);
+    border:1px solid rgba(34,197,94,.3); border-radius:99px; padding:6px 10px; margin-bottom:10px; font-size:9px; color:var(--success); font-weight:700;
+  }
+  .mock-avatars{display:flex;}
+  .mock-avatar{width:16px; height:16px; border-radius:50%; border:2px solid var(--bg-card); margin-left:-5px; font-size:7px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:800;}
+  .mock-avatar:first-child{margin-left:0;}
+
+  .mock-toast{
+    position:absolute; top:50px; left:50%; transform:translateX(-50%);
+    background:#0f2f1c; color:#4ade80; border:1px solid #16532e; padding:7px 12px;
+    border-radius:8px; font-size:9.5px; font-weight:600; white-space:nowrap; box-shadow:0 8px 20px rgba(0,0,0,.4); z-index:10;
+  }
+  .mock-footer{
+    display:flex; border-top:1px solid var(--border); background:rgba(15,23,42,.97); padding:6px 4px;
+  }
+  .mock-nav-tab{flex:1; text-align:center; padding:5px 2px; border-radius:8px; font-size:7px; color:var(--text-faint); font-weight:700;}
+  .mock-nav-tab .ic{font-size:13px; display:block;}
+  .mock-nav-tab.active{color:var(--primary); background:rgba(59,130,246,.12);}
+
+  .pointer{
+    position:absolute; background:#0f172a; color:#fff; font-size:9.5px; font-weight:700;
+    padding:5px 9px; border-radius:8px; box-shadow:0 6px 16px rgba(0,0,0,.3); white-space:nowrap; z-index:6;
+  }
+  .pointer::after{
+    content:''; position:absolute; width:8px; height:8px; background:#0f172a; transform:rotate(45deg);
+  }
+
+  /* ---------- Footer tips grid ---------- */
+  .tips-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin-top:20px;}
+  .tip-card{background:var(--page-card); border:1px solid #e2e8f0; border-radius:14px; padding:16px; box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .tip-card .ic{font-size:22px; margin-bottom:8px;}
+  .tip-card h3{margin:0 0 6px; font-size:14.5px;}
+  .tip-card p{margin:0; font-size:12.5px; color:#64748b;}
+
+  hr.divider{border:none; border-top:1px solid #e2e8f0; margin:50px 0;}
+  h2.section-title{text-align:center; font-size:22px; margin-bottom:6px; color:#0f172a;}
+  p.section-sub{text-align:center; color:#64748b; font-size:13.5px; margin-bottom:30px;}
+
+  footer.page-footer{text-align:center; color:#94a3b8; font-size:12px; margin-top:60px;}
+
+  @media(max-width:760px){
+    section.step, section.step.reverse{flex-direction:column; align-items:center;}
+    .step-text{order:2;}
+    .phone-wrap{order:1;}
+  }
+
+  @media print{
+    body{background:#fff;}
+    nav.toc{display:none;}
+    section.step, section.step.reverse{
+      flex-direction:column-reverse; align-items:center;
+      page-break-inside:avoid; break-inside:avoid;
+      margin-bottom:36px;
+    }
+    .phone-wrap{page-break-inside:avoid; break-inside:avoid; margin-bottom:18px;}
+    .step-text{page-break-inside:avoid; break-inside:avoid;}
+    .tip-card{page-break-inside:avoid; break-inside:avoid;}
+    header.hero{page-break-after:avoid;}
+    hr.divider{page-break-before:always; border:none; margin:0 0 30px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png" alt="Siam Board Games">
+  <h1>📦 คู่มือการใช้งาน SBG-Warehouse RTVB2S</h1>
+  <p>ระบบสแกน Carton / SBC แบบ Realtime — ดูตัวอย่างหน้าจอจริงทีละขั้นตอน</p>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <a href="#step1">1. เลือกผู้ใช้</a>
+    <a href="#step2">2. เลือกชื่องาน</a>
+    <a href="#step3">3. สแกน Carton</a>
+    <a href="#step4">4. สแกน SBC</a>
+    <a href="#step5">5. Dashboard</a>
+    <a href="#step6">6. รายงาน</a>
+    <a href="#tips">ฟีเจอร์เสริม</a>
+  </nav>
+
+  <!-- ================= STEP 1 ================= -->
+  <section class="step" id="step1">
+    <div class="step-text">
+      <div class="step-num">1</div>
+      <h2>👋 เลือกผู้ใช้งาน</h2>
+      <p>เปิดลิงก์แอปมาครั้งแรก จะเจอหน้านี้ก่อนเสมอ — เลือกชื่อของตัวเอง ไม่ต้องใส่รหัสผ่านอะไรทั้งสิ้น</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> โลโก้ Siam Board Games แสดงอยู่ด้านบน</li>
+        <li><span class="callout-badge">2</span> แตะการ์ดชื่อของตัวเอง (หนุ่ย/หยก/ซิก/ภู/ปอ) — สีของแต่ละคนไม่ซ้ำกัน จำง่าย</li>
+        <li><span class="callout-badge">3</span> ระบบจะจำไว้ ครั้งต่อไปเปิดแอปไม่ต้องเลือกใหม่ (ไปหน้าเลือกชื่องานเลย)</li>
+      </ul>
+      <div class="tip-box">💡 ถ้าเลือกผิดคน กดปุ่ม "👤 เปลี่ยนคน" ที่แถบล่างสุดได้ตลอดเวลา</div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar">
+          <div class="mt-left">
+            <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png">
+            <div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span><small>RTVB2S — Scan Carton / SBC</small></div>
+          </div>
+          <div class="mock-icons">
+            <div class="mock-icon-btn">🌙</div><div class="mock-icon-btn">🔊</div><div class="mock-icon-btn">⚙️</div>
+          </div>
+        </div>
+        <div class="mock-body">
+          <div style="text-align:center; margin-bottom:14px;">
+            <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png" style="width:70px; border-radius:10px;">
+          </div>
+          <div class="mock-title">👋 เลือกผู้ใช้งาน</div>
+          <div class="mock-sub">เลือกชื่อของคุณเพื่อเริ่มใช้งาน (ไม่ต้องใส่รหัสผ่าน)</div>
+          <div class="mock-user-grid">
+            <div class="mock-user-card"><div class="mock-user-avatar" style="background:#3b82f6;">ห</div><div class="mock-user-name">หนุ่ย</div></div>
+            <div class="mock-user-card"><div class="mock-user-avatar" style="background:#22c55e;">ห</div><div class="mock-user-name">หยก</div></div>
+            <div class="mock-user-card"><div class="mock-user-avatar" style="background:#f59e0b;">ซ</div><div class="mock-user-name">ซิก</div></div>
+            <div class="mock-user-card"><div class="mock-user-avatar" style="background:#a855f7;">ภ</div><div class="mock-user-name">ภู</div></div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= STEP 2 ================= -->
+  <section class="step reverse" id="step2">
+    <div class="step-text">
+      <div class="step-num">2</div>
+      <h2>📋 เลือกชื่องาน</h2>
+      <p>ทุกครั้งที่เปิดแอป จะมาเจอหน้านี้เป็นหลัก — ต้องเลือกหรือสร้างชื่องานก่อนเสมอ ถึงจะเริ่มสแกนได้</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> สร้างชื่องานใหม่ได้ทันที เช่น "เช้า 20/07", "บ่าย 20/07"</li>
+        <li><span class="callout-badge">2</span> รายการชื่องานล่าสุดแสดงด้านล่าง พร้อมสถานะ 🟢 กำลังทำงาน / ⚪ ปิดแล้ว</li>
+        <li><span class="callout-badge">3</span> แตะชื่องานที่มีอยู่แล้วเพื่อเข้าไปทำงานต่อ (ทุกคนที่เข้าชื่องานเดียวกันจะเห็นข้อมูลร่วมกันแบบ Realtime)</li>
+      </ul>
+      <div class="tip-box">💡 ถ้าเพื่อนร่วมทีมสแกนอยู่ในชื่องานเดียวกัน จะเห็นชื่อเขาโผล่ในแถบ "กำลังใช้งาน" ที่หน้า Dashboard ทันที</div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar">
+          <div class="mt-left">
+            <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png">
+            <div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span><small>RTVB2S — Scan Carton / SBC</small></div>
+          </div>
+          <div class="mock-icons"><div class="mock-icon-btn" style="background:#3b82f6; color:#fff; border-color:#3b82f6;">ห</div></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-title">📋 เลือกชื่องาน</div>
+          <div class="mock-sub">ต้องเลือกหรือสร้างชื่องานก่อน ถึงจะเริ่มสแกนได้</div>
+          <div class="mock-card">
+            <div class="mock-card-title">สร้างชื่องานใหม่</div>
+            <div class="mock-input">เช่น "เช้า 20/07"</div>
+            <div class="mock-btn primary">+ สร้างชื่องาน</div>
+          </div>
+          <div class="mock-card-title" style="margin:12px 0 8px;">ชื่องานล่าสุด</div>
+          <div class="mock-job-item">
+            <div><div class="jn">เช้า 20/07</div><div class="jm">โดย หนุ่ย · 08:14</div></div>
+            <span class="mock-pill active">🟢 กำลังทำงาน</span>
+          </div>
+          <div class="mock-job-item">
+            <div><div class="jn">บ่าย 19/07</div><div class="jm">โดย ปอ · เมื่อวาน</div></div>
+            <span class="mock-pill closed">⚪ ปิดแล้ว</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= STEP 3 ================= -->
+  <section class="step" id="step3">
+    <div class="step-text">
+      <div class="step-num">3</div>
+      <h2>📦 สแกน Carton</h2>
+      <p>เลือกชื่องานแล้ว กด "+ สแกน Carton ใหม่" มาเจอหน้านี้ — สแกนหรือพิมพ์เลขกล่องเพื่อเริ่ม Session ใหม่</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> ใช้เครื่องสแกนบาร์โค้ด USB ยิงได้เลย (ระบบดักจับ Enter อัตโนมัติ)</li>
+        <li><span class="callout-badge">2</span> หรือกดปุ่ม 📷 เปิดกล้องมือถือสแกนแทนก็ได้ ไม่มีเครื่องสแกนก็ใช้งานได้</li>
+        <li><span class="callout-badge">3</span> กด "เริ่มสแกน Carton นี้" เพื่อไปหน้าสแกนสินค้าข้างใน</li>
+      </ul>
+      <div class="tip-box">💡 ด้านล่างมีประวัติ Carton ที่ทำไปแล้ววันนี้ในชื่องานนี้ให้ดูย้อนหลังได้</div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar">
+          <div class="mt-left"><img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png"><div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span></div></div>
+        </div>
+        <div class="mock-body">
+          <div class="mock-title">📦 สแกน Carton</div>
+          <div class="mock-sub">งาน: <b>เช้า 20/07</b></div>
+          <div class="mock-card">
+            <div class="mock-card-title">สแกนหรือพิมพ์เลข Carton</div>
+            <div style="display:flex; gap:6px;">
+              <div class="mock-input scan" style="flex:1; margin-bottom:0;">CTN-0045</div>
+              <div style="width:34px; background:#3b82f6; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px;">📷</div>
+            </div>
+            <div class="mock-btn primary" style="margin-top:10px;">เริ่มสแกน Carton นี้ →</div>
+          </div>
+          <div class="mock-card-title" style="margin:12px 0 8px;">Carton ที่ทำวันนี้</div>
+          <div class="mock-scan-row"><div><div class="barcode">CTN-0044</div><div class="meta">หยก · 12 SKU / 88 Qty</div></div><span class="mock-qty-badge">09:40</span></div>
+          <div class="mock-scan-row"><div><div class="barcode">CTN-0043</div><div class="meta">หนุ่ย (คุณ) · 8 SKU / 60 Qty</div></div><span class="mock-qty-badge">09:12</span></div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= STEP 4 ================= -->
+  <section class="step reverse" id="step4">
+    <div class="step-text">
+      <div class="step-num">4</div>
+      <h2>🏷️ สแกน SBC (สินค้าในกล่อง)</h2>
+      <p>หน้าหลักที่ใช้บ่อยที่สุด — สแกนสินค้าทีละชิ้นจนครบ แล้วกดบันทึกปิด Carton</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> เลือกโหมด "Scan Only" (นับทีละ 1) หรือ "Scan + Qty" (ใส่จำนวนเอง)</li>
+        <li><span class="callout-badge">2</span> สแกนแล้วชื่อสินค้า/SKU จะขึ้นให้อัตโนมัติถ้ามีในระบบ</li>
+        <li><span class="callout-badge">3</span> สแกน Barcode ที่ไม่มีในระบบจะ<b>ขึ้น Error ทันที ไม่บันทึกให้</b> — ป้องกันสแกนผิดกล่อง/ผิดสินค้า</li>
+        <li><span class="callout-badge">4</span> รายการที่สแกนแล้ว ปรับจำนวน (−/+) หรือลบทิ้ง (🗑️) ได้ก่อนบันทึกจริง</li>
+        <li><span class="callout-badge">5</span> ครบแล้วกดปุ่มเขียว "บันทึก/ปิด Carton นี้"</li>
+      </ul>
+      <div class="warn-box">❗ ถ้าเจอ Error "ไม่พบ Barcode ในฐานข้อมูล" แปลว่าสินค้านี้ยังไม่ถูกเพิ่มในระบบ ให้แจ้งแอดมิน Import ข้อมูลสินค้าเพิ่ม</div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar"><div class="mt-left"><img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png"><div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span></div></div></div>
+        <div class="mock-body">
+          <div class="mock-title">🏷️ สแกน SBC</div>
+          <div class="mock-sub">Carton: <b>CTN-0045</b></div>
+          <div class="mock-tabs"><div class="mock-tab active">Scan Only</div><div class="mock-tab">Scan + Qty</div></div>
+          <div class="mock-input scan" style="margin-bottom:10px;">สแกนบาร์โค้ด...</div>
+          <div class="mock-stat-grid">
+            <div class="mock-stat-box"><div class="v">3</div><div class="l">SKU</div></div>
+            <div class="mock-stat-box"><div class="v">15</div><div class="l">Qty รวม</div></div>
+            <div class="mock-stat-box"><div class="v">3</div><div class="l">ครั้ง</div></div>
+          </div>
+          <div class="mock-scan-row"><div><div class="barcode">8850001112223</div><span class="prod">ตัวต่อไม้ SBG รุ่น A</span></div><span class="mock-qty-badge">Qty 5</span></div>
+          <div class="mock-scan-row"><div><div class="barcode">8850001112230</div><span class="prod">การ์ดเกม SBG Deluxe</span></div><span class="mock-qty-badge">Qty 6</span></div>
+          <div class="mock-toast">❌ ไม่พบ Barcode ในฐานข้อมูลสินค้า</div>
+          <div class="mock-btn success" style="margin-top:14px;">✅ บันทึก / ปิด Carton นี้</div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= STEP 5 ================= -->
+  <section class="step" id="step5">
+    <div class="step-text">
+      <div class="step-num">5</div>
+      <h2>📊 Dashboard</h2>
+      <p>ดูภาพรวมของชื่องานแบบ Realtime — สแกนไปกี่ Carton แล้ว ใครกำลังทำงานอยู่บ้าง</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> แถบ 🟢 แสดงว่าใครกำลังเปิดชื่องานนี้อยู่บ้าง ณ ตอนนี้ (อัพเดทเองไม่ต้องรีเฟรช)</li>
+        <li><span class="callout-badge">2</span> สรุปยอดรวม Carton / SKU / Qty ของทั้งชื่องาน</li>
+        <li><span class="callout-badge">3</span> ปิดชื่องานเมื่อทำเสร็จ (กดผิดมี Undo เปิดกลับได้ภายใน 5 นาที)</li>
+      </ul>
+      <div class="tip-box">💡 พอเพื่อนสแกน Carton ใหม่เข้ามา หน้านี้จะขยับตัวเลขให้ทันทีโดยไม่ต้องกดรีเฟรชเลย</div>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar"><div class="mt-left"><img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png"><div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span></div></div></div>
+        <div class="mock-body">
+          <div class="mock-title">📊 Dashboard</div>
+          <div class="mock-sub">งาน: <b>เช้า 20/07</b> · <span class="mock-pill active">🟢 กำลังทำงาน</span></div>
+          <div class="mock-presence">
+            🟢 กำลังใช้งาน (3 คน):
+            <div class="mock-avatars">
+              <div class="mock-avatar" style="background:#3b82f6;">ห</div>
+              <div class="mock-avatar" style="background:#22c55e;">ห</div>
+              <div class="mock-avatar" style="background:#ef4444;">ป</div>
+            </div>
+          </div>
+          <div class="mock-stat-grid">
+            <div class="mock-stat-box"><div class="v">14</div><div class="l">Carton</div></div>
+            <div class="mock-stat-box"><div class="v">86</div><div class="l">SKU รวม</div></div>
+            <div class="mock-stat-box"><div class="v">642</div><div class="l">Qty รวม</div></div>
+          </div>
+          <div class="mock-btn-row" style="margin-bottom:10px;">
+            <div class="mock-btn primary">+ สแกน Carton ใหม่</div>
+            <div class="mock-btn danger">🔒 ปิดชื่องาน</div>
+          </div>
+          <div class="mock-card-title">Carton ล่าสุด</div>
+          <div class="mock-scan-row"><div><div class="barcode">CTN-0045</div><div class="meta">หนุ่ย (คุณ) · 3 SKU / 15 Qty</div></div><span class="mock-qty-badge">10:02</span></div>
+          <div class="mock-scan-row"><div><div class="barcode">CTN-0044</div><div class="meta">หยก · 12 SKU / 88 Qty</div></div><span class="mock-qty-badge">09:40</span></div>
+        </div>
+        <div class="mock-footer">
+          <div class="mock-nav-tab active"><span class="ic">📊</span>Dashboard</div>
+          <div class="mock-nav-tab"><span class="ic">📦</span>สแกน</div>
+          <div class="mock-nav-tab"><span class="ic">📋</span>เปลี่ยนงาน</div>
+          <div class="mock-nav-tab"><span class="ic">👤</span>เปลี่ยนคน</div>
+          <div class="mock-nav-tab"><span class="ic">📑</span>รายงาน</div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <!-- ================= STEP 6 ================= -->
+  <section class="step reverse" id="step6">
+    <div class="step-text">
+      <div class="step-num">6</div>
+      <h2>📑 รายงาน (Report)</h2>
+      <p>ดูสรุปข้อมูลได้หลายมุมมอง เลือกดูได้ตามที่ต้องการ</p>
+      <ul class="callout-list">
+        <li><span class="callout-badge">1</span> <b>Summary</b> — รวมยอดแต่ละ Barcode ทั้งหมด อยู่ Carton ไหนบ้าง</li>
+        <li><span class="callout-badge">2</span> <b>Details</b> — รายละเอียดแยกทีละ Carton</li>
+        <li><span class="callout-badge">3</span> <b>🏆 ผลงาน</b> — ใครสแกนไปกี่ Carton/ชิ้น จัดอันดับให้เลย</li>
+        <li><span class="callout-badge">4</span> <b>🧮 นับสต๊อก</b> — เทียบยอดสแกนจริงกับยอดที่ควรมี</li>
+        <li><span class="callout-badge">5</span> ปุ่ม Export Excel ดาวน์โหลดข้อมูลออกไปดูต่อได้ทันที</li>
+      </ul>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone"><div class="phone-screen">
+        <div class="mock-topbar"><div class="mt-left"><img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png"><div class="mt-title">SBG-Warehouse <span class="mock-badge">REAL</span></div></div></div>
+        <div class="mock-body">
+          <div class="mock-title">📑 รายงาน</div>
+          <div class="mock-sub">งาน: <b>เช้า 20/07</b></div>
+          <div class="mock-tabs">
+            <div class="mock-tab active">Summary</div><div class="mock-tab">Details</div><div class="mock-tab">🏆</div><div class="mock-tab">🧮</div>
+          </div>
+          <div class="mock-input" style="margin-bottom:10px;">🔍 ค้นหา Barcode / ชื่อ...</div>
+          <div class="mock-card" style="padding:10px 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><div class="barcode" style="font-weight:700; font-family:monospace; font-size:11px;">8850001112223</div><div class="meta" style="font-size:9px; color:#64748b;">ตัวต่อไม้ SBG รุ่น A</div></div>
+              <div style="text-align:center;"><div style="font-weight:800; font-size:14px;">42</div><div style="font-size:7.5px; color:#64748b;">ชิ้น</div></div>
+            </div>
+          </div>
+          <div class="mock-card" style="padding:10px 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div><div class="barcode" style="font-weight:700; font-family:monospace; font-size:11px;">8850001112230</div><div class="meta" style="font-size:9px; color:#64748b;">การ์ดเกม SBG Deluxe</div></div>
+              <div style="text-align:center;"><div style="font-weight:800; font-size:14px;">30</div><div style="font-size:7.5px; color:#64748b;">ชิ้น</div></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ================= TIPS ================= -->
+  <div id="tips">
+    <h2 class="section-title">✨ ฟีเจอร์เสริมที่ควรรู้</h2>
+    <p class="section-sub">กดปุ่มเหล่านี้ที่มุมขวาบนของทุกหน้าจอ</p>
+    <div class="tips-grid">
+      <div class="tip-card"><div class="ic">📷</div><h3>สแกนด้วยกล้องมือถือ</h3><p>ไม่มีเครื่องสแกน USB ก็ใช้งานได้ กดปุ่มกล้องข้างช่องสแกน เล็งกล้องไปที่บาร์โค้ดได้เลย</p></div>
+      <div class="tip-card"><div class="ic">🔔</div><h3>แจ้งเตือนแม้ปิดแอป</h3><p>เปิดไว้ในหน้าตั้งค่า จะได้รับแจ้งเตือนทันทีที่มีคนปิดงานหรือสแกน Carton ใหม่ แม้ปิดแอปอยู่</p></div>
+      <div class="tip-card"><div class="ic">🌙</div><h3>สลับธีมมืด/สว่าง</h3><p>กดปุ่มพระจันทร์/พระอาทิตย์มุมขวาบน ปรับตามที่ถนัด ใช้งานตอนกลางคืนได้สบายตา</p></div>
+      <div class="tip-card"><div class="ic">🔊</div><h3>เสียงตอนสแกน</h3><p>มีเสียงแยกความแตกต่างระหว่างสแกนสำเร็จ กับสแกนไม่ผ่าน ไม่ต้องก้มดูจอทุกครั้ง</p></div>
+      <div class="tip-card"><div class="ic">🌐</div><h3>สลับภาษาไทย/อังกฤษ</h3><p>กดปุ่มลูกโลกมุมขวาบน สลับภาษาหลักของหน้าจอได้ทันที</p></div>
+      <div class="tip-card"><div class="ic">🔎</div><h3>ค้นหาข้ามทุกชื่องาน</h3><p>ในหน้ารายงาน มีปุ่มค้นหา Barcode/Carton ย้อนหลังได้ทุกชื่องานที่เคยทำมา ไม่ใช่แค่งานปัจจุบัน</p></div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    SBG-Warehouse RTVB2S — คู่มือฉบับนี้อัพเดทตามฟีเจอร์ล่าสุดของระบบ<br>
+    มีคำถามเพิ่มเติมทักแอดมินทีมได้เลยครับ 🙏
+  </footer>
+
+</div>
+</body>
+</html>

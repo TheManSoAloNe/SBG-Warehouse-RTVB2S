@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SBG-Warehouse RTVB2S</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SBG-WH">
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="title title-with-logo">
+      <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png" alt="Siam Board Games" class="topbar-logo">
+      <div>
+        SBG-Warehouse <span id="mode-badge" class="mode-badge mock">MOCKUP</span>
+        <small>RTVB2S — Scan Carton / SBC</small>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div id="chip-user" class="chip-user" style="display:none;">
+        <span class="dot"></span><span id="chip-user-name"></span>
+      </div>
+      <button class="icon-btn" id="btn-theme" title="สลับธีม">🌙</button>
+      <button class="icon-btn" id="btn-sound" title="เปิด/ปิดเสียงสแกน">🔊</button>
+      <button class="icon-btn" id="btn-speech" title="เปิด/ปิดเสียงพูด">🗣️</button>
+      <button class="icon-btn" id="btn-lang" title="Switch language / สลับภาษา">🌐</button>
+      <button class="icon-btn" id="btn-guide" title="คู่มือการใช้งาน">📖</button>
+      <button class="icon-btn" id="btn-setup" title="ตั้งค่าระบบ (Admin)">⚙️</button>
+    </div>
+  </div>
+
+  <!-- JOB BANNER (แสดงชื่องานปัจจุบันตัวใหญ่ ให้เห็นชัด) -->
+  <div class="job-banner" id="job-banner" style="display:none;">
+    <div class="job-banner-label">กำลังทำงาน</div>
+    <div class="job-banner-name" id="job-banner-name">-</div>
+  </div>
+
+  <!-- ============ SCREEN: SETTINGS (Dashboard-style Admin Panel — ต้องใส่ PIN) ============ -->
+  <section class="screen" id="screen-setup">
+    <div class="page-title">⚙️ ตั้งค่าระบบ (Admin Settings)</div>
+    <div class="page-sub">แผงควบคุมทั้งหมดสำหรับแอดมิน — ป้องกันด้วย PIN</div>
+
+    <div class="settings-overview">
+      <div class="settings-stat"><div class="v" id="ov-users">5</div><div class="l">ผู้ใช้</div></div>
+      <div class="settings-stat"><div class="v" id="ov-master">0</div><div class="l">สินค้าในระบบ</div></div>
+      <div class="settings-stat"><div class="v" id="ov-mode">MOCK</div><div class="l">โหมด DB</div></div>
+      <div class="settings-stat"><div class="v" id="ov-backend">-</div><div class="l">Backend</div></div>
+    </div>
+
+    <div class="warn-banner" id="autoclose-warning-banner" style="display:none;"></div>
+
+    <div class="settings-tabs">
+      <div class="settings-tab active" data-panel="firebase">🔥 Firebase</div>
+      <div class="settings-tab" data-panel="master">📇 สินค้า</div>
+      <div class="settings-tab" data-panel="users">👥 ผู้ใช้</div>
+      <div class="settings-tab" data-panel="notify">🔔 แจ้งเตือน</div>
+      <div class="settings-tab" data-panel="system">🩺 ระบบ</div>
+      <div class="settings-tab" data-panel="backup">💾 สำรอง</div>
+      <div class="settings-tab" data-panel="audit">📜 Audit</div>
+      <div class="settings-tab" data-panel="access">🔒 สิทธิ์</div>
+    </div>
+
+    <!-- ===== PANEL: FIREBASE ===== -->
+    <div class="settings-panel active" id="panel-firebase">
+      <div class="mockup-banner">
+        ℹ️ วิธีที่แนะนำ: ตั้งค่าในไฟล์ <code>.env</code> แล้วรัน <code>node scripts/build-env.js</code><br>
+        หน้านี้ใช้สำหรับตั้งค่าชั่วคราวผ่านเบราว์เซอร์ (เก็บใน localStorage) กรณีไม่สะดวกใช้ Node
+      </div>
+      <div class="card">
+        <div class="field"><label>API Key</label><input type="text" id="cfg-apiKey" placeholder="AIza..."></div>
+        <div class="field"><label>Auth Domain</label><input type="text" id="cfg-authDomain" placeholder="project.firebaseapp.com"></div>
+        <div class="field"><label>Project ID</label><input type="text" id="cfg-projectId" placeholder="project-id"></div>
+        <div class="field"><label>Storage Bucket</label><input type="text" id="cfg-storageBucket" placeholder="project.appspot.com"></div>
+        <div class="field"><label>Messaging Sender ID</label><input type="text" id="cfg-messagingSenderId" placeholder="000000000000"></div>
+        <div class="field"><label>App ID</label><input type="text" id="cfg-appId" placeholder="1:000...:web:xxxx"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" id="btn-save-config">บันทึกและเชื่อมต่อ</button>
+        <button class="btn danger" id="btn-clear-config">ล้างค่า / กลับ Mockup</button>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: BARCODE MASTER (ย้ายมาจากหน้าแยก + ตารางแก้ไข + รูปสินค้า) ===== -->
+    <div class="settings-panel" id="panel-master" style="display:none;">
+      <div class="card">
+        <div class="card-title">1) นำเข้าจาก Excel (.xlsx)</div>
+        <label>ไฟล์ .xlsx</label>
+        <input type="file" id="master-file-input" accept=".xlsx,.xls">
+        <div class="hint" id="master-file-name">ยังไม่ได้เลือกไฟล์</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2) กำหนดตำแหน่งคอลัมน์ / แถวเริ่มต้น</div>
+        <div class="hint" style="margin-bottom:12px;">ใส่ตัวอักษรคอลัมน์ตามที่เห็นใน Excel เช่น A, B, C ... และเลขแถวที่ข้อมูลเริ่มมี (ถ้าแถว 1 เป็นหัวตาราง ให้ใส่ 2)</div>
+        <div class="master-field-row">
+          <div class="mf-label">🏷️ Barcode</div>
+          <div class="field"><label>คอลัมน์</label><input type="text" id="mf-barcode-col" placeholder="A" maxlength="3"></div>
+          <div class="field"><label>แถวเริ่มต้น</label><input type="number" id="mf-barcode-row" placeholder="2" min="1"></div>
+        </div>
+        <div class="master-field-row">
+          <div class="mf-label">📦 ชื่อสินค้า</div>
+          <div class="field"><label>คอลัมน์</label><input type="text" id="mf-name-col" placeholder="B" maxlength="3"></div>
+          <div class="field"><label>แถวเริ่มต้น</label><input type="number" id="mf-name-row" placeholder="2" min="1"></div>
+        </div>
+        <div class="master-field-row">
+          <div class="mf-label">🔖 SKU</div>
+          <div class="field"><label>คอลัมน์</label><input type="text" id="mf-sku-col" placeholder="C" maxlength="3"></div>
+          <div class="field"><label>แถวเริ่มต้น</label><input type="number" id="mf-sku-row" placeholder="2" min="1"></div>
+        </div>
+        <div class="master-field-row">
+          <div class="mf-label">🧮 จำนวนที่ควรมี<br><span class="hint" style="margin:0;">(นับสต๊อก — ไม่ใส่ก็ได้)</span></div>
+          <div class="field"><label>คอลัมน์</label><input type="text" id="mf-expqty-col" placeholder="เช่น D" maxlength="3"></div>
+          <div class="field"><label>แถวเริ่มต้น</label><input type="number" id="mf-expqty-row" placeholder="2" min="1"></div>
+        </div>
+        <button class="btn primary" id="btn-import-master">📥 นำเข้าข้อมูล (Import)</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">สถานะข้อมูล Master ปัจจุบัน</div>
+        <div class="stat-grid" style="margin-top:0;">
+          <div class="stat-box"><div class="val" id="master-count">0</div><div class="lbl">รายการ</div></div>
+          <div class="stat-box" style="grid-column: span 2;"><div class="val" id="master-updated" style="font-size:12px;">-</div><div class="lbl">อัพเดทล่าสุด</div></div>
+        </div>
+        <button class="btn danger small" id="btn-clear-master" style="margin-top:10px;">🗑️ ล้างข้อมูล Master ทั้งหมด</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">3) แก้ไข / เพิ่มสินค้าทีละรายการ (ไม่ต้องอัพโหลด Excel ใหม่)</div>
+        <div class="hint" style="margin-bottom:10px;">แปะลิงก์รูปภาพแล้วขึ้น preview ให้ดูทันที ก่อนกดบันทึก</div>
+        <div class="master-edit-form">
+          <input type="text" id="me-barcode" placeholder="Barcode *">
+          <input type="text" id="me-name" placeholder="ชื่อสินค้า">
+          <input type="text" id="me-sku" placeholder="SKU">
+          <input type="number" id="me-expqty" placeholder="จำนวนที่ควรมี (ไม่ใส่ก็ได้)">
+          <input type="text" id="me-image" placeholder="วางลิงก์รูปภาพ (Copy Image Link)">
+          <div class="me-image-preview" id="me-image-preview" style="display:none;">
+            <img id="me-image-preview-img" src="" alt="preview">
+          </div>
+          <div class="btn-row">
+            <button class="btn success" id="btn-master-save-row">💾 บันทึกรายการนี้</button>
+            <button class="btn ghost" id="btn-master-clear-form">ล้างฟอร์ม</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">รายการสินค้าทั้งหมด</div>
+        <input type="text" id="master-table-filter" placeholder="🔍 ค้นหา Barcode / ชื่อ / SKU...">
+        <div id="master-table-body"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: USERS (B1 — จัดการ 5 คน) ===== -->
+    <div class="settings-panel" id="panel-users" style="display:none;">
+      <div class="card">
+        <div class="card-title">เพิ่มผู้ใช้ใหม่ / แก้ไข</div>
+        <input type="text" id="um-id" placeholder="รหัสผู้ใช้ (ตั้งครั้งเดียว เช่น u_new)">
+        <input type="text" id="um-name" placeholder="ชื่อที่แสดง">
+        <label style="margin-top:4px;">สี</label>
+        <input type="color" id="um-color" value="#3b82f6" style="width:100%; height:42px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg-input); margin-bottom:14px; cursor:pointer;">
+        <div class="btn-row">
+          <button class="btn success" id="btn-user-save">💾 บันทึกผู้ใช้นี้</button>
+          <button class="btn ghost" id="btn-user-clear-form">ล้างฟอร์ม</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">รายชื่อผู้ใช้ทั้งหมด (<span id="um-count">5</span> คน)</div>
+        <div id="user-mgmt-list"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: NOTIFICATION (B4 — template ข้อความ) ===== -->
+    <div class="settings-panel" id="panel-notify" style="display:none;">
+      <div class="card">
+        <div class="card-title">🔔 การแจ้งเตือนของฉัน</div>
+        <div class="hint" style="margin-bottom:12px;">เปิดแจ้งเตือนเมื่อมีคนปิดชื่องาน หรือเมื่อเพื่อนร่วมทีมสแกน Carton ใหม่เข้ามา (ทำงานได้แม้ปิดแอปถ้าตั้งค่า Backend ไว้ครบ)</div>
+        <button class="btn primary" id="btn-notify-toggle">🔔 เปิดการแจ้งเตือน</button>
+        <div class="hint" id="notify-status" style="margin-top:8px;">สถานะ: ปิดอยู่</div>
+      </div>
+      <div class="card">
+        <div class="card-title">แม่แบบข้อความ Push Notification</div>
+        <div class="hint" style="margin-bottom:10px;">ปรับข้อความที่จะส่งแจ้งเตือน ใช้ <code>{jobName}</code>, <code>{userName}</code>, <code>{cartonNo}</code> แทนค่าจริงได้</div>
+        <label>ตอนปิดชื่องาน</label>
+        <input type="text" id="tpl-job-closed" placeholder="{jobName} ถูกปิดแล้ว โดย {userName}">
+        <label>ตอนสแกน Carton ใหม่</label>
+        <input type="text" id="tpl-carton-new" placeholder="{userName} สแกน Carton {cartonNo} ใหม่">
+        <button class="btn primary" id="btn-save-templates">💾 บันทึกแม่แบบข้อความ</button>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: SYSTEM (B3, B6, B9 — สถานะ Backend, Quota, Log เข้า Setup) ===== -->
+    <div class="settings-panel" id="panel-system" style="display:none;">
+      <div class="card">
+        <div class="card-title">🩺 สถานะ Backend (Push Notification Server)</div>
+        <div class="stat-grid" style="margin-top:0;">
+          <div class="stat-box"><div class="val" id="sys-backend-status">-</div><div class="lbl">สถานะ</div></div>
+          <div class="stat-box"><div class="val" id="sys-push-today">-</div><div class="lbl">Push วันนี้</div></div>
+          <div class="stat-box"><div class="val" id="sys-backend-uptime">-</div><div class="lbl">Uptime</div></div>
+        </div>
+        <button class="btn ghost small" id="btn-refresh-system" style="margin-top:10px;">🔄 รีเฟรชสถานะ</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Firestore Quota (โดยประมาณ)</div>
+        <div class="hint" id="sys-quota-hint">ยังไม่มีข้อมูล — ต้องตั้งค่า Backend ให้รายงานค่านี้ก่อน</div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚙️ ตั้งค่า Threshold ต่างๆ ของระบบ</div>
+        <div class="hint" style="margin-bottom:12px;">ปรับเปลี่ยนระยะเวลาหรือเงื่อนไขการทำงานในฝั่ง Frontend</div>
+        <div class="field">
+          <label>เวลาที่ชื่องานจะถูกปิดอัตโนมัติ (ชั่วโมง)</label>
+          <input type="number" id="cfg-threshold-autoclose" placeholder="เช่น 8" min="1" max="24">
+          <div class="hint">ชื่องานที่ไม่มีการสแกนใดๆ เลยเกินเวลานี้ จะถูกปิดให้โดยอัตโนมัติ</div>
+        </div>
+        <div class="field">
+          <label>หน่วงเวลาเซฟ Carton อัตโนมัติ (วินาที)</label>
+          <input type="number" id="cfg-threshold-autosave" placeholder="เช่น 3" min="1" max="10">
+          <div class="hint">รวบรวมการสแกนต่อเนื่องไว้ และจะเซฟลงฐานข้อมูลเมื่อหยุดสแกนครบตามเวลาที่กำหนด (ลดภาระเซิร์ฟเวอร์)</div>
+        </div>
+        <button class="btn primary" id="btn-save-thresholds" style="margin-top:6px;">💾 บันทึกค่า Threshold</button>
+      </div>
+      <div class="card">
+        <div class="card-title">📜 ประวัติการเข้าหน้า Settings (ใครใส่ PIN เมื่อไหร่)</div>
+        <input type="text" id="setup-log-filter" placeholder="🔍 ค้นหาตามคน...">
+        <div id="setup-access-log-body"></div>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: BACKUP (B5 — export ข้อมูลเต็มรูปแบบ) ===== -->
+    <div class="settings-panel" id="panel-backup" style="display:none;">
+      <div class="card">
+        <div class="card-title">💾 สำรอง / กู้คืนการตั้งค่า</div>
+        <div class="hint" style="margin-bottom:12px;">Export ค่า Firebase, ข้อมูล Barcode Master, ธีม และเสียง เป็นไฟล์ JSON เดียว เพื่อย้ายเครื่องหรือแชร์ให้เพื่อนร่วมทีมตั้งค่าเหมือนกัน</div>
+        <div class="btn-row" style="margin-bottom:10px;">
+          <button class="btn primary" id="btn-backup-export">📤 Export การตั้งค่า</button>
+        </div>
+        <label>นำเข้าไฟล์ Backup (.json)</label>
+        <input type="file" id="backup-file-input" accept=".json">
+        <button class="btn success" id="btn-backup-import" style="margin-top:6px;">📥 Import การตั้งค่า</button>
+      </div>
+      <div class="card">
+        <div class="card-title">🗄️ Export ฐานข้อมูลทั้งหมด (Firestore Full Export)</div>
+        <div class="hint" style="margin-bottom:12px;">ดาวน์โหลดข้อมูลทุก Collection (ชื่องาน, Carton, สแกน, ผู้ใช้ ฯลฯ) เป็นไฟล์ JSON เดียว สำหรับสำรองฉุกเฉิน</div>
+        <button class="btn primary" id="btn-export-firestore-full">📦 Export ฐานข้อมูลทั้งหมด</button>
+      </div>
+    </div>
+
+    <!-- ===== PANEL: AUDIT LOG (ย้ายจาก screen-audit) ===== -->
+    <div class="settings-panel" id="panel-audit" style="display:none;">
+      <div class="card">
+        <div class="card-title">📜 Audit Log — ประวัติการทำงานทั้งหมด</div>
+        <div class="hint" style="margin-bottom:12px;">เลือกชื่องานที่ต้องการดูประวัติ แล้วค้นหาตามคน / ประเภท / รายละเอียด</div>
+        <div class="field">
+          <label>เลือกชื่องาน</label>
+          <select id="audit-job-select" class="settings-select">
+            <option value="">-- เลือกชื่องาน --</option>
+          </select>
+        </div>
+        <input type="text" id="audit-filter" placeholder="🔍 ค้นหาตามคน / ประเภท / รายละเอียด..." style="margin-top:8px;">
+      </div>
+      <div id="audit-body" style="margin-top:4px;"></div>
+    </div>
+
+    <!-- ===== PANEL: ACCESS CONTROL (สิทธิ์การมองเห็น) ===== -->
+    <div class="settings-panel" id="panel-access" style="display:none;">
+      <div class="card">
+        <div class="card-title">🔒 สิทธิ์การมองเห็นในหน้ารายงาน</div>
+        <div class="hint" style="margin-bottom:16px;">ตั้งค่าโดย Admin — มีผลทันที บันทึกไว้ใน localStorage ของเครื่องนี้</div>
+        <div class="access-toggle-row">
+          <div class="access-toggle-info">
+            <div class="access-toggle-label">🏆 แท็บ "ผลงาน" ในหน้ารายงาน</div>
+            <div class="access-toggle-hint">แสดงสถิติผลงานรายบุคคล</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-tab-performance" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="access-toggle-row">
+          <div class="access-toggle-info">
+            <div class="access-toggle-label">🧮 แท็บ "นับสต๊อก" ในหน้ารายงาน</div>
+            <div class="access-toggle-hint">แสดงตารางเปรียบเทียบสต๊อกจริงกับที่ควรมี</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-tab-stocktake" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="access-toggle-row">
+          <div class="access-toggle-info">
+            <div class="access-toggle-label">📤 ปุ่ม "Export Excel"</div>
+            <div class="access-toggle-hint">อนุญาตให้ทุกคนใช้ได้ (ปิดเพื่อจำกัดเฉพาะ Admin)</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-export-excel" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn ghost" id="btn-setup-back" style="margin-top:18px;">← ย้อนกลับ</button>
+    <button class="fab-back-to-top" id="btn-settings-scrolltop" title="เลื่อนกลับขึ้นบนสุด">⬆️</button>
+  </section>
+
+  <!-- ============ SCREEN: SELECT USER ============ -->
+  <section class="screen" id="screen-user">
+    <div class="splash-logo-wrap">
+      <img src="https://siamboardgames.com/wp-content/uploads/2025/10/LOGO-2025.png" alt="Siam Board Games" class="splash-logo">
+    </div>
+    <div class="page-title">👋 เลือกผู้ใช้งาน</div>
+    <div class="page-sub">เลือกชื่อของคุณเพื่อเริ่มใช้งาน (ไม่ต้องใส่รหัสผ่าน)</div>
+    <div class="mockup-banner" id="mockup-banner-user" style="display:none;">
+      🧪 ตอนนี้อยู่ใน <b>MOCKUP MODE</b> — ยังไม่ได้เชื่อมต่อ Firebase จริง ข้อมูลจะหายเมื่อรีเฟรชหน้า
+    </div>
+    <div class="user-grid" id="user-grid"></div>
+  </section>
+
+  <!-- ============ SCREEN: JOB LIST (ชื่องาน) ============ -->
+  <section class="screen" id="screen-job">
+    <div class="page-title">📋 เลือกชื่องาน</div>
+    <div class="page-sub">ต้องเลือกหรือสร้างชื่องานก่อน ถึงจะเริ่มสแกนได้</div>
+
+    <div class="card">
+      <div class="card-title">สร้างชื่องานใหม่</div>
+      <div class="field">
+        <input type="text" id="new-job-name" placeholder='เช่น "เช้า 18/07", "บ่าย 18/07"'>
+      </div>
+      <button class="btn primary" id="btn-create-job">+ สร้างชื่องาน</button>
+    </div>
+
+    <div class="card-title" style="margin-top:18px;">ชื่องานล่าสุด</div>
+    <div id="job-list"></div>
+  </section>
+
+  <!-- ============ SCREEN: SCAN CARTON ============ -->
+  <section class="screen" id="screen-carton">
+    <div class="page-title">📦 สแกน Carton</div>
+    <div class="page-sub">งาน: <b id="carton-job-name">-</b></div>
+
+    <div class="card">
+      <label>สแกนหรือพิมพ์เลข Carton</label>
+      <div class="scan-input-row">
+        <input type="text" id="carton-input" class="scan-input" placeholder="สแกน Carton No." autocomplete="off">
+        <button class="cam-toggle-btn" id="btn-cam-carton" title="เปิดกล้องสแกน">📷</button>
+      </div>
+      <div class="camera-box" id="camera-box-carton" style="display:none;">
+        <div id="reader-carton" class="qr-reader"></div>
+        <div class="camera-hint">เล็งกล้องไปที่ Barcode / QR Code</div>
+      </div>
+      <button class="btn primary" id="btn-start-carton">เริ่มสแกน Carton นี้ →</button>
+    </div>
+
+    <div class="card-title">Carton ที่ทำวันนี้ในงานนี้</div>
+    <div class="list-filters">
+      <div class="filter-chips">
+        <div class="filter-chip active" data-filter="all">ทั้งหมด</div>
+        <div class="filter-chip" data-filter="draft">🟢 Draft</div>
+        <div class="filter-chip" data-filter="closed">⚪ Closed</div>
+        <div class="filter-chip" data-filter="my">👤 ของฉัน</div>
+      </div>
+      <input type="text" class="filter-search" id="carton-history-search" placeholder="🔍 ค้นหาเลข Carton...">
+    </div>
+    <div id="carton-history"></div>
+  </section>
+
+  <!-- ============ SCREEN: SCAN SBC ============ -->
+  <section class="screen" id="screen-sbc">
+    <div class="page-title">🏷️ สแกน SBC</div>
+    <div class="page-sub" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      Carton: 
+      <div style="position:relative;" id="scan-carton-picker-wrap">
+        <button class="btn small outline" id="btn-scan-changecarton" aria-haspopup="true" aria-expanded="false" style="padding:4px 8px; font-weight:bold;">
+          <span id="sbc-carton-no">-</span> ▾
+        </button>
+        <div class="job-picker-dropdown" id="scan-carton-picker" style="display:none; width:220px; left:0; top:36px; z-index:100;">
+          <input type="text" class="job-picker-search" id="scan-carton-picker-search" placeholder="ค้นหา Carton...">
+          <div class="job-picker-list" id="scan-carton-picker-list"></div>
+        </div>
+      </div>
+      · งาน: <b id="sbc-job-name">-</b>
+    </div>
+    <div class="mockup-banner" id="no-master-banner" style="display:none;">
+      ⚠️ ยังไม่มีข้อมูลสินค้า (Barcode Master) — สแกนจะไม่ผ่านจนกว่าจะ Import ข้อมูลจากหน้า 📇 ก่อน
+    </div>
+
+    <div class="tabs">
+      <div class="tab-btn active" data-mode="scanonly" id="tab-scanonly">Scan Only</div>
+      <div class="tab-btn" data-mode="scanqty" id="tab-scanqty">Scan + Qty</div>
+    </div>
+
+    <div class="card">
+      <div class="top-fields">
+        <div id="qty-field" style="display:none;">
+          <label>จำนวน (Qty)</label>
+          <input type="number" id="sbc-qty" value="1" min="1">
+        </div>
+        <div style="flex:2;">
+          <label>สแกนบาร์โค้ด SBC</label>
+          <div class="scan-input-row">
+            <input type="text" id="sbc-input" class="scan-input" placeholder="สแกน Barcode..." autocomplete="off">
+            <button class="cam-toggle-btn" id="btn-cam-sbc" title="เปิดกล้องสแกน">📷</button>
+          </div>
+        </div>
+      </div>
+      <div class="camera-box" id="camera-box-sbc" style="display:none;">
+        <div id="reader-sbc" class="qr-reader"></div>
+        <div class="camera-hint">เล็งกล้องไปที่ Barcode / QR Code — สแกนต่อเนื่องอัตโนมัติ</div>
+      </div>
+      <label style="margin-top:4px;">🔍 หรือค้นหาสินค้าแทนการสแกน</label>
+      <input type="text" id="quick-search-input" placeholder="พิมพ์ชื่อ / SKU / Barcode...">
+      <div class="qs-results" id="quick-search-results" style="display:none;"></div>
+    </div>
+
+    <div class="rapidfire-row">
+      <label class="switch-label">
+        <input type="checkbox" id="chk-rapidfire" checked>
+        <span>⚡ โหมดสแกนต่อเนื่อง (ล็อกโฟกัสช่องสแกนตลอด)</span>
+      </label>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val" id="stat-sku">0</div><div class="lbl">SKU</div></div>
+      <div class="stat-box"><div class="val" id="stat-qty">0</div><div class="lbl">Qty รวม</div></div>
+      <div class="stat-box"><div class="val" id="stat-scans">0</div><div class="lbl">ครั้งที่สแกน</div></div>
+    </div>
+
+    <div class="card-title">รายการที่สแกนใน Carton นี้ <span class="live-dot"></span> <span class="hint" style="margin-left:6px;">(ปัดซ้ายเพื่อลบ)</span></div>
+    <div class="scan-list" id="sbc-scan-list"></div>
+
+    <div class="divider"></div>
+    <div class="scan-action-row">
+      <button class="btn success" id="btn-finish-carton">✅ บันทึก / ปิด Carton นี้</button>
+      <button class="btn ghost small" id="btn-cancel-carton" title="ลบทิ้ง Draft นี้แล้วกลับไปหน้าเลือก">❌ ยกเลิก (ทิ้ง Draft)</button>
+    </div>
+
+    <!-- F7: ปุ่ม Undo สแกนล่าสุดแบบเร็ว (ลอยมุมล่างขวา) -->
+    <button class="fab-undo" id="btn-undo-scan" style="display:none;" title="เลิกทำสแกนล่าสุด">↩️</button>
+  </section>
+
+  <!-- ============ SCREEN: DASHBOARD ============ -->
+  <section class="screen" id="screen-dashboard">
+    <div class="page-title">📊 Dashboard <span class="live-dot"></span></div>
+    <div class="page-sub">งาน: <b id="dash-job-name">-</b> · <span id="dash-job-status" class="status-pill active">กำลังทำงาน</span></div>
+
+    <div class="presence-bar" id="presence-bar" style="display:none;">
+      <span class="presence-label">🟢 กำลังใช้งานในงานนี้:</span>
+      <div class="presence-avatars" id="presence-avatars"></div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val" id="dash-cartons">0</div><div class="lbl">Carton</div></div>
+      <div class="stat-box"><div class="val" id="dash-sku">0</div><div class="lbl">SKU รวม</div></div>
+      <div class="stat-box"><div class="val" id="dash-qty">0</div><div class="lbl">Qty รวม</div></div>
+    </div>
+
+    <div class="btn-row" style="margin-bottom:14px;">
+      <button class="btn primary" id="btn-goto-carton">+ สแกน Carton ใหม่</button>
+      <button class="btn danger" id="btn-close-job">🔒 ปิดชื่องาน</button>
+    </div>
+    <button class="btn warning" id="btn-reopen-job" style="display:none; margin-bottom:14px;">↩️ เปิดชื่องานอีกครั้ง (Undo)</button>
+
+    <div class="card-title">Carton ล่าสุดในงานนี้</div>
+    <div class="list-filters">
+      <div class="filter-chips">
+        <div class="filter-chip active" data-filter="all">ทั้งหมด</div>
+        <div class="filter-chip" data-filter="draft">🟢 Draft</div>
+        <div class="filter-chip" data-filter="closed">⚪ Closed</div>
+        <div class="filter-chip" data-filter="my">👤 ของฉัน</div>
+      </div>
+      <input type="text" class="filter-search" id="dash-carton-search" placeholder="🔍 ค้นหาเลข Carton...">
+    </div>
+    <div id="dash-carton-list"></div>
+  </section>
+
+  <!-- ============ SCREEN: REPORT ============ -->
+  <section class="screen" id="screen-report">
+    <div class="page-title">📑 รายงาน (Report)</div>
+
+    <!-- Job picker row -->
+    <div class="report-job-row" id="report-job-row">
+      <div class="report-job-picker-wrap" id="report-job-picker-wrap">
+        <button class="btn small ghost" id="btn-report-changejob" aria-haspopup="listbox" aria-expanded="false">
+          <span id="report-job-name">-</span> <span class="picker-arrow">▾</span>
+        </button>
+        <!-- Dropdown -->
+        <div class="job-picker-dropdown" id="report-job-picker" style="display:none;" role="listbox">
+          <div class="job-picker-search-wrap">
+            <input type="text" class="job-picker-search" id="report-job-picker-search" placeholder="🔍 ค้นหาชื่องาน..." autocomplete="off">
+          </div>
+          <div class="job-picker-list" id="report-job-picker-list"></div>
+        </div>
+      </div>
+      <button class="btn small ghost" id="btn-report-export">📤 Export Excel</button>
+      <button class="btn small ghost" id="btn-report-search-all">🔎 ค้นหาข้ามทุกงาน</button>
+    </div>
+
+    <div class="tabs">
+      <div class="tab-btn active" data-report="summary" id="tab-report-summary">Summary</div>
+      <div class="tab-btn" data-report="detail" id="tab-report-detail">Details</div>
+      <div class="tab-btn" data-report="performance" id="tab-report-performance">🏆 ผลงาน</div>
+      <div class="tab-btn" data-report="stocktake" id="tab-report-stocktake">🧮 นับสต๊อก</div>
+    </div>
+
+    <div class="field">
+      <input type="text" id="report-filter" placeholder="🔍 ค้นหา Barcode / ชื่อ / เลข Carton ...">
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val" id="report-total-sku">0</div><div class="lbl">SKU</div></div>
+      <div class="stat-box"><div class="val" id="report-total-qty">0</div><div class="lbl">Qty รวม</div></div>
+      <div class="stat-box"><div class="val" id="report-total-cartons">0</div><div class="lbl">Carton</div></div>
+    </div>
+
+    <div id="report-body"></div>
+  </section>
+
+  <!-- ============ SCREEN: SEARCH ACROSS ALL JOBS ============ -->
+  <section class="screen" id="screen-search-all">
+    <div class="page-title">🔎 ค้นหาข้ามทุกงาน</div>
+    <div class="page-sub">ค้นหา Barcode / ชื่อสินค้า / SKU / เลข Carton ได้จากทุกชื่องานย้อนหลังทั้งหมด</div>
+
+    <div class="field">
+      <input type="text" id="search-all-input" placeholder="🔍 พิมพ์ Barcode / ชื่อ / SKU / เลข Carton...">
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val" id="search-all-count">0</div><div class="lbl">รายการที่พบ</div></div>
+    </div>
+
+    <div id="search-all-body"></div>
+    <button class="btn ghost" id="btn-search-all-back" style="margin-top:14px;">← กลับไปหน้ารายงาน</button>
+  </section>
+
+
+
+  <!-- FOOTER NAV -->
+  <div class="footer-nav" id="footer-nav" style="display:none;">
+    <button class="nav-tab" id="nav-dashboard" data-nav="dashboard">
+      <span class="nav-icon">📊</span><span class="nav-label">Dashboard</span>
+    </button>
+    <button class="nav-tab" id="nav-carton" data-nav="carton">
+      <span class="nav-icon">📦</span><span class="nav-label">สแกน</span>
+    </button>
+    <button class="nav-tab" id="nav-changejob" data-nav="job">
+      <span class="nav-icon">📋</span><span class="nav-label">เปลี่ยนงาน</span>
+    </button>
+    <button class="nav-tab" id="nav-changeuser" data-nav="user">
+      <span class="nav-icon">👤</span><span class="nav-label">เปลี่ยนคน</span>
+    </button>
+    <button class="nav-tab" id="nav-report" data-nav="report">
+      <span class="nav-icon">📑</span><span class="nav-label">รายงาน</span>
+    </button>
+  </div>
+
+  <!-- F11: Modal Confirm Finish Carton -->
+  <div class="confirm-modal-overlay" id="modal-confirm-finish" style="display:none; z-index:1100;">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-title">✅ ยืนยันปิด Carton</div>
+      <div class="confirm-modal-message">กรุณาตรวจสอบความถูกต้องก่อนกดบันทึก</div>
+      <div style="background:var(--bg-card); padding:12px; border-radius:8px; font-size:15px; margin-bottom:16px; border:1px solid var(--border); text-align:center;">
+        <div style="margin-bottom:8px; font-size:18px;"><strong>Carton No:</strong> <span id="finish-carton-no" style="color:var(--primary);"></span></div>
+        <div style="display:flex; justify-content:space-around;">
+          <div><strong>Total SKU:</strong><br><span id="finish-carton-sku" style="font-size:20px; font-weight:bold;">0</span></div>
+          <div><strong>Total Qty:</strong><br><span id="finish-carton-qty" style="font-size:20px; font-weight:bold;">0</span></div>
+        </div>
+      </div>
+      <div class="btn-row" style="flex-direction: column; gap: 8px;">
+        <button class="btn success" id="btn-confirm-finish-submit" style="padding:14px; font-size:16px;">✅ ยืนยันบันทึกและปิด Carton</button>
+        <button class="btn ghost" onclick="document.getElementById('modal-confirm-finish').style.display='none'">ย้อนกลับไปสแกนต่อ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN LOCK MODAL — ป้องกันหน้าตั้งค่า (⚙️ Setup) -->
+  <!-- F8: Flash overlay แจ้งเตือนเต็มจอ -->
+  <div class="flash-overlay" id="flash-overlay" style="display:none;"></div>
+
+
+
+  <!-- Feedback 1.1 ฟีเจอร์เสริม #3 — Reusable Confirm Modal Engine (ใช้แทน confirm()/alert() ทุกจุดของ Carton/Job lifecycle) -->
+  <div class="confirm-modal-overlay" id="confirm-modal" style="display:none;">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-title" id="confirm-modal-title"></div>
+      <div class="confirm-modal-message" id="confirm-modal-message"></div>
+      <div class="confirm-modal-list" id="confirm-modal-list" style="display:none;"></div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn ghost" id="confirm-modal-cancel">ยกเลิก</button>
+        <button class="btn primary" id="confirm-modal-confirm">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- INLINE EDIT MODAL (Reopen Carton) -->
+  <div class="confirm-modal-overlay" id="inline-edit-modal" style="display:none;">
+    <div class="confirm-modal-box edit-modal-box">
+      <div class="confirm-modal-title">✏️ แก้ไขรายการ: <span id="inline-edit-label">-</span></div>
+      
+      <label>เพิ่มรายการ (สแกน/พิมพ์ Barcode แล้ว Enter)</label>
+      <input type="text" id="inline-edit-barcode" placeholder="สแกนหรือพิมพ์ Barcode...">
+      <div class="hint" style="margin-bottom:8px;">ปัดซ้ายเพื่อลบรายการ</div>
+      
+      <div class="scan-list" id="inline-edit-items-list" style="max-height: 250px; overflow-y: auto;"></div>
+      
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn ghost" id="btn-inline-edit-cancel">ยกเลิก</button>
+        <button class="btn success" id="btn-inline-edit-save">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feedback 1.1 ฟีเจอร์เสริม #1 — Auto-recovery popup: พบ Draft ค้างตอนเปิดแอปใหม่ -->
+  <div class="confirm-modal-overlay" id="recovery-modal" style="display:none;">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-title">📦 พบ Carton ที่ยังไม่ปิด</div>
+      <div class="confirm-modal-message" id="recovery-modal-message"></div>
+      <div class="btn-row" style="margin-top:16px;">
+        <button class="btn ghost" id="recovery-modal-dismiss">ไว้ทีหลัง</button>
+        <button class="btn primary" id="recovery-modal-resume">ทำต่อเลย →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/env.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

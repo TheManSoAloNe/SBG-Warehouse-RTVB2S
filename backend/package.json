@@ -1,0 +1,19 @@
+{
+  "name": "sbg-warehouse-push-backend",
+  "version": "1.0.0",
+  "description": "Backend server สำหรับ SBG-Warehouse RTVB2S — ฟัง Firestore แบบ Realtime แล้วยิง Push Notification ผ่าน Firebase Cloud Messaging",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase-admin": "^12.3.1"
+  }
+}
