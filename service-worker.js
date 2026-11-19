@@ -4,7 +4,7 @@
    2) รับ Push Notification จาก Firebase Cloud Messaging (FCM) ตอนแอปปิด/อยู่เบื้องหลัง
       (ทำงานร่วมกับ Backend บน Render ที่คอยฟัง Firestore แล้วยิง push มาที่นี่) */
 
-const CACHE_NAME = 'sbg-warehouse-v2';
+const CACHE_NAME = 'sbg-warehouse-v3';
 const APP_SHELL = [
   './',
   './index.html',

@@ -2252,8 +2252,10 @@
     if (!state.currentJob) { goToJobScreen(); return; }
     clearListeners();
     showScreen('screen-report');
-    document.getElementById('report-job-name').textContent = state.currentJob.name;
-    document.getElementById('report-filter').value = state.reportFilter || '';
+    const jobNameEl = document.getElementById('report-job-name');
+    if (jobNameEl) jobNameEl.textContent = state.currentJob.name;
+    const filterEl = document.getElementById('report-filter');
+    if (filterEl) filterEl.value = state.reportFilter || '';
     setReportMode(state.reportMode);
 
     const unsubC = DB.listen(COLLECTIONS.CARTONS, state.currentJob.id, (rows) => {
@@ -2269,10 +2271,14 @@
 
   function setReportMode(mode) {
     state.reportMode = mode;
-    document.getElementById('tab-report-summary').classList.toggle('active', mode === 'summary');
-    document.getElementById('tab-report-detail').classList.toggle('active', mode === 'detail');
-    document.getElementById('tab-report-performance').classList.toggle('active', mode === 'performance');
-    document.getElementById('tab-report-stocktake').classList.toggle('active', mode === 'stocktake');
+    const tabSum = document.getElementById('tab-report-summary');
+    const tabDet = document.getElementById('tab-report-detail');
+    const tabPerf = document.getElementById('tab-report-performance');
+    const tabStock = document.getElementById('tab-report-stocktake');
+    if (tabSum) tabSum.classList.toggle('active', mode === 'summary');
+    if (tabDet) tabDet.classList.toggle('active', mode === 'detail');
+    if (tabPerf) tabPerf.classList.toggle('active', mode === 'performance');
+    if (tabStock) tabStock.classList.toggle('active', mode === 'stocktake');
     renderReport();
   }
 
@@ -2283,10 +2289,14 @@
   function openJobPickerDropdown() {
     const btn = document.getElementById('btn-report-changejob');
     const dropdown = document.getElementById('report-job-picker');
-    btn.classList.add('picker-open');
-    btn.setAttribute('aria-expanded', 'true');
+    if (!dropdown) return;
+    if (btn) {
+      btn.classList.add('picker-open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
     dropdown.style.display = 'block';
-    document.getElementById('report-job-picker-search').value = '';
+    const searchEl = document.getElementById('report-job-picker-search');
+    if (searchEl) searchEl.value = '';
     
     DB.getAll(COLLECTIONS.JOBS).then(jobs => {
       jobs.sort((a, b) => toMillis(b.createdAt) - toMillis(a.createdAt));
@@ -2300,9 +2310,11 @@
   function closeJobPickerDropdown() {
     const btn = document.getElementById('btn-report-changejob');
     const dropdown = document.getElementById('report-job-picker');
-    btn.classList.remove('picker-open');
-    btn.setAttribute('aria-expanded', 'false');
-    dropdown.style.display = 'none';
+    if (btn) {
+      btn.classList.remove('picker-open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+    if (dropdown) dropdown.style.display = 'none';
     document.removeEventListener('click', closeJobPickerOutside);
   }
 
@@ -2355,10 +2367,13 @@
      REPORT ACCESS CONTROL (Feedback 1.3)
   ---------------------------------------------------------------------- */
   function applyReportTabVisibility() {
-    const vis = state.reportVisibility;
-    document.getElementById('tab-report-performance').style.display = vis.performance ? '' : 'none';
-    document.getElementById('tab-report-stocktake').style.display = vis.stocktake ? '' : 'none';
-    document.getElementById('btn-report-export').style.display = vis.exportExcel ? '' : 'none';
+    const vis = state.reportVisibility || { performance: true, stocktake: true, exportExcel: true };
+    const tabPerf = document.getElementById('tab-report-performance');
+    const tabStock = document.getElementById('tab-report-stocktake');
+    const btnExport = document.getElementById('btn-report-export');
+    if (tabPerf) tabPerf.style.display = vis.performance ? '' : 'none';
+    if (tabStock) tabStock.style.display = vis.stocktake ? '' : 'none';
+    if (btnExport) btnExport.style.display = vis.exportExcel ? '' : 'none';
     
     const togglePerf = document.getElementById('toggle-tab-performance');
     const toggleStock = document.getElementById('toggle-tab-stocktake');
@@ -2373,10 +2388,13 @@
   }
 
   function updateReportVisibilityFromForm() {
+    const togglePerf = document.getElementById('toggle-tab-performance');
+    const toggleStock = document.getElementById('toggle-tab-stocktake');
+    const toggleExport = document.getElementById('toggle-export-excel');
     state.reportVisibility = {
-      performance: document.getElementById('toggle-tab-performance').checked,
-      stocktake: document.getElementById('toggle-tab-stocktake').checked,
-      exportExcel: document.getElementById('toggle-export-excel').checked
+      performance: togglePerf ? togglePerf.checked : true,
+      stocktake: toggleStock ? toggleStock.checked : true,
+      exportExcel: toggleExport ? toggleExport.checked : true
     };
     localStorage.setItem(LS_KEYS.REPORT_VISIBILITY, JSON.stringify(state.reportVisibility));
     applyReportTabVisibility();
@@ -2395,13 +2413,19 @@
     const closedReportCartons = reportCartons.filter((c) => (c.status || CARTON_STATUS.CLOSED) === CARTON_STATUS.CLOSED);
 
     // ภาพรวมสถิติทั้งงาน (ไม่ขึ้นกับ filter)
-    document.getElementById('report-total-cartons').textContent = closedReportCartons.length;
-    document.getElementById('report-total-sku').textContent =
-      new Set(reportDetails.map((d) => d.barcode)).size;
-    document.getElementById('report-total-qty').textContent =
-      reportDetails.reduce((s, d) => s + (d.qty || 0), 0);
+    const totalCartonsEl = document.getElementById('report-total-cartons');
+    if (totalCartonsEl) totalCartonsEl.textContent = closedReportCartons.length;
+    const totalSkuEl = document.getElementById('report-total-sku');
+    if (totalSkuEl) {
+      totalSkuEl.textContent = new Set(reportDetails.map((d) => d.barcode)).size;
+    }
+    const totalQtyEl = document.getElementById('report-total-qty');
+    if (totalQtyEl) {
+      totalQtyEl.textContent = reportDetails.reduce((s, d) => s + (d.qty || 0), 0);
+    }
 
     const body = document.getElementById('report-body');
+    if (!body) return;
 
     if (!reportDetails.length && state.reportMode !== 'stocktake') {
       body.innerHTML = '<div class="empty-state"><div class="emoji">📑</div>ยังไม่มีข้อมูลสแกนในงานนี้</div>';
@@ -4030,30 +4054,48 @@
     document.getElementById('btn-reopen-job').addEventListener('click', reopenJob);
 
     // Report
-    document.getElementById('tab-report-summary').addEventListener('click', () => setReportMode('summary'));
-    document.getElementById('tab-report-detail').addEventListener('click', () => setReportMode('detail'));
-    document.getElementById('tab-report-performance').addEventListener('click', () => setReportMode('performance'));
-    document.getElementById('tab-report-stocktake').addEventListener('click', () => setReportMode('stocktake'));
-    document.getElementById('report-filter').addEventListener('input', (e) => {
-      state.reportFilter = e.target.value;
-      renderReport();
-    });
-    document.getElementById('btn-report-changejob').addEventListener('click', (e) => {
-      const dropdown = document.getElementById('report-job-picker');
-      if (dropdown.style.display === 'none') openJobPickerDropdown();
-      else closeJobPickerDropdown();
-      e.stopPropagation();
-    });
-    document.getElementById('report-job-picker-search').addEventListener('input', renderJobPickerList);
-    document.getElementById('btn-report-export').addEventListener('click', exportReportToExcel);
-    document.getElementById('btn-report-search-all').addEventListener('click', goToSearchAllScreen);
-    document.getElementById('search-all-input').addEventListener('input', renderSearchAll);
-    document.getElementById('btn-search-all-back').addEventListener('click', goToReportScreen);
+    const tabSum = document.getElementById('tab-report-summary');
+    if (tabSum) tabSum.addEventListener('click', () => setReportMode('summary'));
+    const tabDet = document.getElementById('tab-report-detail');
+    if (tabDet) tabDet.addEventListener('click', () => setReportMode('detail'));
+    const tabPerf = document.getElementById('tab-report-performance');
+    if (tabPerf) tabPerf.addEventListener('click', () => setReportMode('performance'));
+    const tabStock = document.getElementById('tab-report-stocktake');
+    if (tabStock) tabStock.addEventListener('click', () => setReportMode('stocktake'));
+    const repFilter = document.getElementById('report-filter');
+    if (repFilter) {
+      repFilter.addEventListener('input', (e) => {
+        state.reportFilter = e.target.value;
+        renderReport();
+      });
+    }
+    const btnReportChangeJob = document.getElementById('btn-report-changejob');
+    if (btnReportChangeJob) {
+      btnReportChangeJob.addEventListener('click', (e) => {
+        const dropdown = document.getElementById('report-job-picker');
+        if (dropdown && dropdown.style.display === 'none') openJobPickerDropdown();
+        else closeJobPickerDropdown();
+        e.stopPropagation();
+      });
+    }
+    const repJobPickerSearch = document.getElementById('report-job-picker-search');
+    if (repJobPickerSearch) repJobPickerSearch.addEventListener('input', renderJobPickerList);
+    const btnRepExport = document.getElementById('btn-report-export');
+    if (btnRepExport) btnRepExport.addEventListener('click', exportReportToExcel);
+    const btnRepSearchAll = document.getElementById('btn-report-search-all');
+    if (btnRepSearchAll) btnRepSearchAll.addEventListener('click', goToSearchAllScreen);
+    const searchAllInput = document.getElementById('search-all-input');
+    if (searchAllInput) searchAllInput.addEventListener('input', renderSearchAll);
+    const btnSearchAllBack = document.getElementById('btn-search-all-back');
+    if (btnSearchAllBack) btnSearchAllBack.addEventListener('click', goToReportScreen);
 
     // Settings Access Control
-    document.getElementById('toggle-tab-performance').addEventListener('change', updateReportVisibilityFromForm);
-    document.getElementById('toggle-tab-stocktake').addEventListener('change', updateReportVisibilityFromForm);
-    document.getElementById('toggle-export-excel').addEventListener('change', updateReportVisibilityFromForm);
+    const togglePerf = document.getElementById('toggle-tab-performance');
+    if (togglePerf) togglePerf.addEventListener('change', updateReportVisibilityFromForm);
+    const toggleStock = document.getElementById('toggle-tab-stocktake');
+    if (toggleStock) toggleStock.addEventListener('change', updateReportVisibilityFromForm);
+    const toggleExport = document.getElementById('toggle-export-excel');
+    if (toggleExport) toggleExport.addEventListener('change', updateReportVisibilityFromForm);
     
     // Settings Audit
     document.getElementById('audit-job-select').addEventListener('change', loadSettingsAuditLog);
