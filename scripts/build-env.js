@@ -31,13 +31,28 @@ function parseEnv(content) {
 }
 
 function main() {
-  if (!fs.existsSync(ENV_PATH)) {
-    console.error('[build-env] ไม่พบไฟล์ .env — คัดลอก .env.example เป็น .env ก่อน');
-    process.exit(1);
+  let env = {};
+  if (fs.existsSync(ENV_PATH)) {
+    const raw = fs.readFileSync(ENV_PATH, 'utf-8');
+    env = parseEnv(raw);
   }
 
-  const raw = fs.readFileSync(ENV_PATH, 'utf-8');
-  const env = parseEnv(raw);
+  // อ่านจาก process.env เพิ่มเติม (สำหรับ Render / Vercel / CI-CD ที่ตั้งค่าใน Dashboard)
+  const envKeys = [
+    'FIREBASE_API_KEY',
+    'FIREBASE_AUTH_DOMAIN',
+    'FIREBASE_PROJECT_ID',
+    'FIREBASE_STORAGE_BUCKET',
+    'FIREBASE_MESSAGING_SENDER_ID',
+    'FIREBASE_APP_ID',
+    'FIREBASE_VAPID_KEY',
+    'PUSH_BACKEND_URL',
+  ];
+  envKeys.forEach((k) => {
+    if (!env[k] && process.env[k]) {
+      env[k] = process.env[k];
+    }
+  });
 
   const required = [
     'FIREBASE_API_KEY',
